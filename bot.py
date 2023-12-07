@@ -40,7 +40,8 @@ async def on_ready():
         # В строчке 36 не использую WHERE так как в таблице "run" всего один элемент
             null_pl = '{"id": 0, "PlayerID": 0, "Name":"None", "Time": 5999.9999}'
             cursor.execute('INSERT INTO speedruns (lvl, top1, top2, top3, top4, top5, top6, top7, top8, top9, top10) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (f'{i}', null_pl, null_pl, null_pl, null_pl, null_pl, null_pl, null_pl, null_pl, null_pl, null_pl))
-    conn.commit()
+    conn.commit() # После всех изменений сохраняем их, если это не сделать, то он сохранит только в временный файл,
+    # и тогда при выборе элемента, он выберет не изменённый элемент
     print("Бот запущен!")
 
 for file in os.listdir("./cogs"):
