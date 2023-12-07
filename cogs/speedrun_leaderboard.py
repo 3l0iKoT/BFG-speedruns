@@ -12,6 +12,7 @@ cursor = conn.cursor()
 url = os.getenv('SPEEDRUN_URL')
 
 async def TopDescriptionEmbed(lvl):
+    # Вернёт массив из следующих столбиков [top1, top2, top3, top4, top5, top6, top7, top8, top9, top10]
     tops = cursor.execute(f'SELECT top1, top2, top3, top4, top5, top6, top7, top8, top9, top10 FROM speedruns WHERE lvl = {lvl}').fetchone()
     description = ''
     for i in range(10):
@@ -75,6 +76,7 @@ async def LoadingData(ctx):
                         break
                 for j in range(second_pos - 1, first_pos - 1, -1):
                     save_plstr = cursor.execute(f'SELECT top{j} FROM speedruns WHERE lvl = {last_run % 6}').fetchone()[0]
+                    # ОБНОВЛЯЮ значение элемента, таблицы "speedruns" столбика "top(какой-то)", где lvl = (какому-то числу), на данные о спидранере
                     cursor.execute(f"UPDATE speedruns SET top{j + 1} = '{save_plstr}' WHERE lvl = {last_run % 6}")
                 save_pl = json.loads(cursor.execute(f'SELECT top{first_pos} FROM speedruns WHERE lvl = {last_run % 6}').fetchone()[0])
                 if (first_pos <= second_pos) and (load_pl['Time'] < save_pl['Time']):
@@ -83,7 +85,7 @@ async def LoadingData(ctx):
         print(f"Спидран #{last_run} проверен")
         await ctx.send(f"Спидран #{last_run} проверен")
         last_run += 1
-        cursor.execute(f"UPDATE run SET cur = {last_run}")
+        cursor.execute(f"UPDATE run SET cur = {last_run}") # Не использую WHERE так как в таблице "run" всего один элемент
         conn.commit()
         response_data = requests.post(url, data={"SpeedrunID":f"{last_run}"}).text
         await asyncio.sleep(1)
